@@ -1,739 +1,804 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shape Drawing - ML Interface</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      h1,
+      h2 {
+        color: #333;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .panel {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 300px;
+      }
+      canvas {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        cursor: crosshair;
+        display: block;
+        margin: 10px 0;
+        touch-action: none;
+      }
+      button,
+      select,
+      input {
+        padding: 8px 12px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button.primary {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+      }
+      button.secondary {
+        background-color: #2196f3;
+        color: white;
+        border: none;
+      }
+      button.danger {
+        background-color: #f44336;
+        color: white;
+        border: none;
+      }
+      .controls {
+        margin: 10px 0;
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+      }
+      .error {
+        background-color: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+      }
+      .info {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border-left: 4px solid #1565c0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 2s linear infinite;
+        display: inline-block;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        h1, h2 {
-            color: #333;
+        100% {
+          transform: rotate(360deg);
         }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .panel {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            min-width: 300px;
-        }
-        canvas {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: white;
-            cursor: crosshair;
-            display: block;
-            margin: 10px 0;
-            touch-action: none;
-        }
-        button, select, input {
-            padding: 8px 12px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        button.primary {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-        }
-        button.secondary {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-        }
-        button.danger {
-            background-color: #f44336;
-            color: white;
-            border: none;
-        }
-        .controls {
-            margin: 10px 0;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid #2e7d32;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #c62828;
-            border-left: 4px solid #c62828;
-        }
-        .info {
-            background-color: #e3f2fd;
-            color: #1565c0;
-            border-left: 4px solid #1565c0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 2s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .hidden {
-            display: none;
-        }
-        #datasetTable {
-            max-height: 300px;
-            overflow-y: auto;
-        }
+      }
+      .hidden {
+        display: none;
+      }
+      #datasetTable {
+        max-height: 300px;
+        overflow-y: auto;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Shape Drawing ML Interface</h1>
 
     <div class="container">
-        <!-- Prediction Panel -->
-        <div class="panel">
-            <h2>Predict Shape</h2>
-            <p>Select a shape name and see the model prediction.</p>
+      <!-- Prediction Panel -->
+      <div class="panel">
+        <h2>Predict Shape</h2>
+        <p>Select a shape name and see the model prediction.</p>
 
-            <div class="controls">
-                <select id="promptSelect">
-                    <option value="">Loading prompts...</option>
-                </select>
-                <button id="predictBtn" class="primary">Predict Shape</button>
-                <span id="predictLoader" class="loader hidden"></span>
-            </div>
-
-            <canvas id="predictCanvas" width="300" height="300"></canvas>
-
-            <div id="predictionStatus" class="status hidden"></div>
+        <div class="controls">
+          <select id="promptSelect">
+            <option value="">Loading prompts...</option>
+          </select>
+          <button id="predictBtn" class="primary">Predict Shape</button>
+          <span id="predictLoader" class="loader hidden"></span>
         </div>
 
-        <!-- Training Panel -->
-        <div class="panel">
-            <h2>Add Training Data</h2>
-            <p>Draw a shape and add it to the training dataset.</p>
+        <canvas id="predictCanvas" width="300" height="300"></canvas>
 
-            <div class="controls">
-                <input type="text" id="newPromptInput" placeholder="Shape name (e.g., circle, square)">
-                <button id="clearDrawingBtn" class="secondary">Clear Drawing</button>
-                <button id="addToDatasetBtn" class="primary">Add to Dataset</button>
-            </div>
+        <div id="predictionStatus" class="status hidden"></div>
+      </div>
 
-            <canvas id="drawingCanvas" width="300" height="300"></canvas>
+      <!-- Training Panel -->
+      <div class="panel">
+        <h2>Add Training Data</h2>
+        <p>Draw a shape and add it to the training dataset.</p>
 
-            <div id="trainingStatus" class="status hidden"></div>
+        <div class="controls">
+          <input
+            type="text"
+            id="newPromptInput"
+            placeholder="Shape name (e.g., circle, square)"
+          />
+          <button id="clearDrawingBtn" class="secondary">Clear Drawing</button>
+          <button id="addToDatasetBtn" class="primary">Add to Dataset</button>
         </div>
+
+        <canvas id="drawingCanvas" width="300" height="300"></canvas>
+
+        <div id="trainingStatus" class="status hidden"></div>
+      </div>
     </div>
 
     <!-- Dataset Management -->
     <div class="panel">
-        <h2>Dataset Management</h2>
-        <p>View and manage the current training dataset.</p>
+      <h2>Dataset Management</h2>
+      <p>View and manage the current training dataset.</p>
 
-        <div class="controls">
-            <button id="loadDatasetBtn" class="secondary">Load Dataset</button>
-            <button id="saveDatasetBtn" class="primary">Save Dataset</button>
-            <button id="retrainModelBtn" class="secondary">Retrain Model</button>
-            <span id="datasetLoader" class="loader hidden"></span>
-        </div>
+      <div class="controls">
+        <button id="loadDatasetBtn" class="secondary">Load Dataset</button>
+        <button id="saveDatasetBtn" class="primary">Save Dataset</button>
+        <button id="retrainModelBtn" class="secondary">Retrain Model</button>
+        <span id="datasetLoader" class="loader hidden"></span>
+      </div>
 
-        <div id="datasetStatus" class="status hidden"></div>
+      <div id="datasetStatus" class="status hidden"></div>
 
-        <div id="datasetTable">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Prompt</th>
-                        <th>Points</th>
-                        <th>Preview</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="datasetBody">
-                    <tr>
-                        <td colspan="5">Load dataset to view data</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <div id="datasetTable">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Prompt</th>
+              <th>Points</th>
+              <th>Preview</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="datasetBody">
+            <tr>
+              <td colspan="5">Load dataset to view data</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <script>
-        // State management
-        const state = {
-            dataset: [],
-            currentDrawing: [],
-            prompts: [],
-            isDrawing: false,
-            isDragging: false,
-            dragPointIndex: -1
-        };
+      // State management
+      const state = {
+        dataset: [],
+        currentDrawing: [],
+        prompts: [],
+        isDrawing: false,
+        isDragging: false,
+        dragPointIndex: -1,
+      };
 
-        // DOM elements
-        const predictCanvas = document.getElementById('predictCanvas');
-        const drawingCanvas = document.getElementById('drawingCanvas');
-        const predictCtx = predictCanvas.getContext('2d');
-        const drawingCtx = drawingCanvas.getContext('2d');
-        const promptSelect = document.getElementById('promptSelect');
-        const newPromptInput = document.getElementById('newPromptInput');
-        const predictBtn = document.getElementById('predictBtn');
-        const clearDrawingBtn = document.getElementById('clearDrawingBtn');
-        const addToDatasetBtn = document.getElementById('addToDatasetBtn');
-        const loadDatasetBtn = document.getElementById('loadDatasetBtn');
-        const saveDatasetBtn = document.getElementById('saveDatasetBtn');
-        const retrainModelBtn = document.getElementById('retrainModelBtn');
-        const datasetBody = document.getElementById('datasetBody');
-        const predictionStatus = document.getElementById('predictionStatus');
-        const trainingStatus = document.getElementById('trainingStatus');
-        const datasetStatus = document.getElementById('datasetStatus');
-        const predictLoader = document.getElementById('predictLoader');
-        const datasetLoader = document.getElementById('datasetLoader');
+      // DOM elements
+      const predictCanvas = document.getElementById('predictCanvas');
+      const drawingCanvas = document.getElementById('drawingCanvas');
+      const predictCtx = predictCanvas.getContext('2d');
+      const drawingCtx = drawingCanvas.getContext('2d');
+      const promptSelect = document.getElementById('promptSelect');
+      const newPromptInput = document.getElementById('newPromptInput');
+      const predictBtn = document.getElementById('predictBtn');
+      const clearDrawingBtn = document.getElementById('clearDrawingBtn');
+      const addToDatasetBtn = document.getElementById('addToDatasetBtn');
+      const loadDatasetBtn = document.getElementById('loadDatasetBtn');
+      const saveDatasetBtn = document.getElementById('saveDatasetBtn');
+      const retrainModelBtn = document.getElementById('retrainModelBtn');
+      const datasetBody = document.getElementById('datasetBody');
+      const predictionStatus = document.getElementById('predictionStatus');
+      const trainingStatus = document.getElementById('trainingStatus');
+      const datasetStatus = document.getElementById('datasetStatus');
+      const predictLoader = document.getElementById('predictLoader');
+      const datasetLoader = document.getElementById('datasetLoader');
 
-        // Initialize
-        function init() {
-            drawGrid(predictCtx);
-            drawGrid(drawingCtx);
-            loadPrompts();
-            setupEventListeners();
+      // Initialize
+      function init() {
+        drawGrid(predictCtx);
+        drawGrid(drawingCtx);
+        loadPrompts();
+        setupEventListeners();
+      }
+
+      // API Functions
+      async function loadPrompts() {
+        try {
+          const response = await fetch('/prompts');
+          const data = await response.json();
+
+          state.prompts = data.prompts || [];
+
+          // Update the dropdown
+          promptSelect.innerHTML = '';
+
+          if (state.prompts.length === 0) {
+            promptSelect.innerHTML =
+              '<option value="">No prompts available</option>';
+            showStatus(
+              predictionStatus,
+              'No prompts loaded. Add training data first!',
+              'info'
+            );
+          } else {
+            state.prompts.forEach((prompt) => {
+              const option = document.createElement('option');
+              option.value = prompt;
+              option.textContent = prompt;
+              promptSelect.appendChild(option);
+            });
+            hideStatus(predictionStatus);
+          }
+        } catch (error) {
+          console.error('Error loading prompts:', error);
+          showStatus(
+            predictionStatus,
+            'Failed to load prompts from server',
+            'error'
+          );
+          promptSelect.innerHTML =
+            '<option value="">Error loading prompts</option>';
         }
+      }
 
-        // API Functions
-        async function loadPrompts() {
-            try {
-                const response = await fetch('/prompts');
-                const data = await response.json();
+      async function predictShape(prompt) {
+        try {
+          showLoader(predictLoader);
 
-                state.prompts = data.prompts || [];
+          const response = await fetch('/predict', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+          });
 
-                // Update the dropdown
-                promptSelect.innerHTML = '';
+          const data = await response.json();
 
-                if (state.prompts.length === 0) {
-                    promptSelect.innerHTML = '<option value="">No prompts available</option>';
-                    showStatus(predictionStatus, 'No prompts loaded. Add training data first!', 'info');
-                } else {
-                    state.prompts.forEach(prompt => {
-                        const option = document.createElement('option');
-                        option.value = prompt;
-                        option.textContent = prompt;
-                        promptSelect.appendChild(option);
-                    });
-                    hideStatus(predictionStatus);
-                }
-            } catch (error) {
-                console.error('Error loading prompts:', error);
-                showStatus(predictionStatus, 'Failed to load prompts from server', 'error');
-                promptSelect.innerHTML = '<option value="">Error loading prompts</option>';
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          hideLoader(predictLoader);
+          drawPoints(predictCtx, data.points);
+          showStatus(predictionStatus, 'Prediction successful!', 'success');
+
+          return data.points;
+        } catch (error) {
+          hideLoader(predictLoader);
+          console.error('Prediction error:', error);
+          showStatus(
+            predictionStatus,
+            `Prediction failed: ${error.message}`,
+            'error'
+          );
+          return null;
+        }
+      }
+
+      async function loadDataset() {
+        try {
+          showLoader(datasetLoader);
+          const response = await fetch('/shapes.json');
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              state.dataset = [];
+              showStatus(
+                datasetStatus,
+                'No dataset file found. Create a new dataset.',
+                'info'
+              );
+              renderDatasetTable();
+              hideLoader(datasetLoader);
+              return;
             }
+            throw new Error(`HTTP error ${response.status}`);
+          }
+
+          const data = await response.json();
+          state.dataset = Array.isArray(data) ? data : [];
+
+          hideLoader(datasetLoader);
+          renderDatasetTable();
+          showStatus(
+            datasetStatus,
+            `Dataset loaded with ${state.dataset.length} entries`,
+            'success'
+          );
+        } catch (error) {
+          hideLoader(datasetLoader);
+          console.error('Error loading dataset:', error);
+          showStatus(
+            datasetStatus,
+            `Failed to load dataset: ${error.message}`,
+            'error'
+          );
+        }
+      }
+
+      async function saveDataset() {
+        try {
+          showLoader(datasetLoader);
+
+          const response = await fetch('/save-dataset', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(state.dataset),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Unknown error');
+          }
+
+          hideLoader(datasetLoader);
+          showStatus(datasetStatus, 'Dataset saved successfully!', 'success');
+        } catch (error) {
+          hideLoader(datasetLoader);
+          console.error('Error saving dataset:', error);
+          showStatus(
+            datasetStatus,
+            `Failed to save dataset: ${error.message}`,
+            'error'
+          );
+
+          // Fallback: Download as file if server saving fails
+          downloadDataset();
+        }
+      }
+
+      function downloadDataset() {
+        const dataStr = JSON.stringify(state.dataset, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'shapes.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showStatus(
+          datasetStatus,
+          'Dataset downloaded as file (server save failed)',
+          'info'
+        );
+      }
+
+      async function retrainModel() {
+        try {
+          showLoader(datasetLoader);
+
+          const response = await fetch('/retrain', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Unknown error');
+          }
+
+          hideLoader(datasetLoader);
+          showStatus(datasetStatus, 'Model retrained successfully!', 'success');
+
+          // Reload prompts as they might have changed
+          await loadPrompts();
+        } catch (error) {
+          hideLoader(datasetLoader);
+          console.error('Error retraining model:', error);
+          showStatus(
+            datasetStatus,
+            `Failed to retrain model: ${error.message}`,
+            'error'
+          );
+        }
+      }
+
+      // Canvas Drawing Functions
+      function drawGrid(ctx) {
+        const canvas = ctx.canvas;
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw grid
+        ctx.strokeStyle = '#eee';
+        ctx.lineWidth = 1;
+
+        // Draw horizontal lines
+        for (let y = 0; y <= height; y += 20) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y);
+          ctx.stroke();
         }
 
-        async function predictShape(prompt) {
-            try {
-                showLoader(predictLoader);
+        // Draw vertical lines
+        for (let x = 0; x <= width; x += 20) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, height);
+          ctx.stroke();
+        }
+      }
 
-                const response = await fetch('/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prompt })
-                });
+      function drawPoints(ctx, points, isEditable = false) {
+        const canvas = ctx.canvas;
 
-                const data = await response.json();
+        // Clear and redraw grid
+        drawGrid(ctx);
 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+        if (!points || points.length === 0) return;
 
-                hideLoader(predictLoader);
-                drawPoints(predictCtx, data.points);
-                showStatus(predictionStatus, 'Prediction successful!', 'success');
+        // Draw shape outline
+        ctx.strokeStyle = '#0066cc';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(points[0][0], points[0][1]);
 
-                return data.points;
-            } catch (error) {
-                hideLoader(predictLoader);
-                console.error('Prediction error:', error);
-                showStatus(predictionStatus, `Prediction failed: ${error.message}`, 'error');
-                return null;
-            }
+        for (let i = 1; i < points.length; i++) {
+          if (points[i][0] === 0 && points[i][1] === 0) continue; // Skip padding zeros
+          ctx.lineTo(points[i][0], points[i][1]);
         }
 
-        async function loadDataset() {
-            try {
-                showLoader(datasetLoader);
-                const response = await fetch('/shapes.json');
+        // Check if the last point is close to the first point
+        const startPoint = points[0];
+        const endPoint = points[points.length - 1];
+        const dx = startPoint[0] - endPoint[0];
+        const dy = startPoint[1] - endPoint[1];
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        state.dataset = [];
-                        showStatus(datasetStatus, 'No dataset file found. Create a new dataset.', 'info');
-                        renderDatasetTable();
-                        hideLoader(datasetLoader);
-                        return;
-                    }
-                    throw new Error(`HTTP error ${response.status}`);
-                }
-
-                const data = await response.json();
-                state.dataset = Array.isArray(data) ? data : [];
-
-                hideLoader(datasetLoader);
-                renderDatasetTable();
-                showStatus(datasetStatus, `Dataset loaded with ${state.dataset.length} entries`, 'success');
-            } catch (error) {
-                hideLoader(datasetLoader);
-                console.error('Error loading dataset:', error);
-                showStatus(datasetStatus, `Failed to load dataset: ${error.message}`, 'error');
-            }
+        // If the last point is close to the first point, visually close the shape
+        if (distance < 20) {
+          // Draw a line back to the first point to close the shape
+          ctx.lineTo(startPoint[0], startPoint[1]);
         }
 
-        async function saveDataset() {
-            try {
-                showLoader(datasetLoader);
+        ctx.stroke();
 
-                const response = await fetch('/save-dataset', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(state.dataset)
-                });
+        // Draw control points if editable
+        if (isEditable) {
+          for (let i = 0; i < points.length; i++) {
+            const [x, y] = points[i];
+            if (x === 0 && y === 0) continue; // Skip padding zeros
 
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Unknown error');
-                }
-
-                hideLoader(datasetLoader);
-                showStatus(datasetStatus, 'Dataset saved successfully!', 'success');
-            } catch (error) {
-                hideLoader(datasetLoader);
-                console.error('Error saving dataset:', error);
-                showStatus(datasetStatus, `Failed to save dataset: ${error.message}`, 'error');
-
-                // Fallback: Download as file if server saving fails
-                downloadDataset();
-            }
-        }
-
-        function downloadDataset() {
-            const dataStr = JSON.stringify(state.dataset, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'shapes.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            showStatus(datasetStatus, 'Dataset downloaded as file (server save failed)', 'info');
-        }
-
-        async function retrainModel() {
-            try {
-                showLoader(datasetLoader);
-
-                const response = await fetch('/retrain', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Unknown error');
-                }
-
-                hideLoader(datasetLoader);
-                showStatus(datasetStatus, 'Model retrained successfully!', 'success');
-
-                // Reload prompts as they might have changed
-                await loadPrompts();
-            } catch (error) {
-                hideLoader(datasetLoader);
-                console.error('Error retraining model:', error);
-                showStatus(datasetStatus, `Failed to retrain model: ${error.message}`, 'error');
-            }
-        }
-
-        // Canvas Drawing Functions
-        function drawGrid(ctx) {
-            const canvas = ctx.canvas;
-            const width = canvas.width;
-            const height = canvas.height;
-
-            // Clear canvas
-            ctx.clearRect(0, 0, width, height);
-
-            // Draw grid
-            ctx.strokeStyle = '#eee';
-            ctx.lineWidth = 1;
-
-            // Draw horizontal lines
-            for (let y = 0; y <= height; y += 20) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-                ctx.stroke();
-            }
-
-            // Draw vertical lines
-            for (let x = 0; x <= width; x += 20) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-                ctx.stroke();
-            }
-        }
-
-        function drawPoints(ctx, points, isEditable = false) {
-            const canvas = ctx.canvas;
-
-            // Clear and redraw grid
-            drawGrid(ctx);
-
-            if (!points || points.length === 0) return;
-
-            // Draw shape outline
-            ctx.strokeStyle = '#0066cc';
-            ctx.lineWidth = 2;
+            ctx.fillStyle = i === 0 ? '#ff0000' : '#0066cc';
             ctx.beginPath();
-            ctx.moveTo(points[0][0], points[0][1]);
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
 
-            for (let i = 1; i < points.length; i++) {
-                if (points[i][0] === 0 && points[i][1] === 0) continue; // Skip padding zeros
-                ctx.lineTo(points[i][0], points[i][1]);
+            // Draw point index
+            ctx.fillStyle = '#000';
+            ctx.font = '10px Arial';
+            ctx.fillText(i.toString(), x + 7, y - 7);
+          }
+        }
+      }
+
+      function addPointToDrawing(x, y) {
+        state.currentDrawing.push([x, y]);
+        drawPoints(drawingCtx, state.currentDrawing, true);
+      }
+
+      function updatePointInDrawing(index, x, y) {
+        if (index >= 0 && index < state.currentDrawing.length) {
+          state.currentDrawing[index] = [x, y];
+          drawPoints(drawingCtx, state.currentDrawing, true);
+        }
+      }
+
+      function clearDrawing() {
+        state.currentDrawing = [];
+        drawGrid(drawingCtx);
+        hideStatus(trainingStatus);
+      }
+
+      // UI Functions
+      function renderDatasetTable() {
+        if (state.dataset.length === 0) {
+          datasetBody.innerHTML =
+            '<tr><td colspan="5">No data in dataset</td></tr>';
+          return;
+        }
+
+        datasetBody.innerHTML = '';
+
+        state.dataset.forEach((item, index) => {
+          const row = document.createElement('tr');
+
+          // ID column
+          const idCell = document.createElement('td');
+          idCell.textContent = index + 1;
+          row.appendChild(idCell);
+
+          // Prompt column
+          const promptCell = document.createElement('td');
+          promptCell.textContent = item.prompt;
+          row.appendChild(promptCell);
+
+          // Points column
+          const pointsCell = document.createElement('td');
+          pointsCell.textContent = `${item.points.length} points`;
+          row.appendChild(pointsCell);
+
+          // Preview column
+          const previewCell = document.createElement('td');
+          const previewCanvas = document.createElement('canvas');
+          previewCanvas.width = 100;
+          previewCanvas.height = 100;
+          const previewCtx = previewCanvas.getContext('2d');
+
+          // Scale the points to fit the small preview
+          const scaledPoints = item.points.map(([x, y]) => {
+            return [x / 3, y / 3];
+          });
+
+          drawGrid(previewCtx);
+          drawPoints(previewCtx, scaledPoints);
+
+          previewCell.appendChild(previewCanvas);
+          row.appendChild(previewCell);
+
+          // Actions column
+          const actionsCell = document.createElement('td');
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.className = 'danger';
+          deleteBtn.onclick = () => {
+            state.dataset.splice(index, 1);
+            renderDatasetTable();
+          };
+          actionsCell.appendChild(deleteBtn);
+          row.appendChild(actionsCell);
+
+          datasetBody.appendChild(row);
+        });
+      }
+
+      function showStatus(element, message, type) {
+        element.textContent = message;
+        element.className = `status ${type}`;
+        element.classList.remove('hidden');
+      }
+
+      function hideStatus(element) {
+        element.classList.add('hidden');
+      }
+
+      function showLoader(loader) {
+        loader.classList.remove('hidden');
+      }
+
+      function hideLoader(loader) {
+        loader.classList.add('hidden');
+      }
+
+      // Event Listeners
+      function setupEventListeners() {
+        // Predict button
+        predictBtn.addEventListener('click', () => {
+          const prompt = promptSelect.value;
+          if (!prompt) {
+            showStatus(predictionStatus, 'Please select a prompt', 'error');
+            return;
+          }
+
+          predictShape(prompt);
+        });
+
+        // Clear drawing button
+        clearDrawingBtn.addEventListener('click', clearDrawing);
+
+        // Add to dataset button
+        addToDatasetBtn.addEventListener('click', () => {
+          const prompt = newPromptInput.value.trim();
+
+          if (!prompt) {
+            showStatus(trainingStatus, 'Please enter a shape name', 'error');
+            return;
+          }
+
+          if (state.currentDrawing.length < 3) {
+            showStatus(
+              trainingStatus,
+              'Draw at least 3 points to create a shape',
+              'error'
+            );
+            return;
+          }
+
+          state.dataset.push({
+            prompt,
+            points: [...state.currentDrawing],
+          });
+
+          renderDatasetTable();
+          showStatus(
+            trainingStatus,
+            `Added "${prompt}" shape to the dataset`,
+            'success'
+          );
+
+          // If this is a new prompt, add it to the dropdown
+          if (!state.prompts.includes(prompt)) {
+            state.prompts.push(prompt);
+            const option = document.createElement('option');
+            option.value = prompt;
+            option.textContent = prompt;
+            promptSelect.appendChild(option);
+          }
+
+          // Clear for next drawing
+          clearDrawing();
+          newPromptInput.value = '';
+        });
+
+        // Drawing canvas events
+        drawingCanvas.addEventListener('mousedown', (e) => {
+          const rect = drawingCanvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          // Check if we're clicking on an existing point
+          for (let i = 0; i < state.currentDrawing.length; i++) {
+            const [px, py] = state.currentDrawing[i];
+            const dx = px - x;
+            const dy = py - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 10) {
+              // Within 10px of a point
+              state.isDragging = true;
+              state.dragPointIndex = i;
+              return;
             }
+          }
 
-            // Close the path if it looks like a closed shape
-            const startPoint = points[0];
-            const endPoint = points[points.length - 1];
-            const dx = startPoint[0] - endPoint[0];
-            const dy = startPoint[1] - endPoint[1];
+          // Otherwise start drawing
+          state.isDrawing = true;
+          addPointToDrawing(x, y);
+        });
+
+        drawingCanvas.addEventListener('mousemove', (e) => {
+          if (!state.isDrawing && !state.isDragging) return;
+
+          const rect = drawingCanvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          if (state.isDragging) {
+            updatePointInDrawing(state.dragPointIndex, x, y);
+          }
+        });
+
+        drawingCanvas.addEventListener('mouseup', () => {
+          state.isDrawing = false;
+          state.isDragging = false;
+        });
+
+        drawingCanvas.addEventListener('mouseleave', () => {
+          state.isDrawing = false;
+          state.isDragging = false;
+        });
+
+        // Touch events for mobile
+        drawingCanvas.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const rect = drawingCanvas.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
+
+          // Check if we're touching an existing point
+          for (let i = 0; i < state.currentDrawing.length; i++) {
+            const [px, py] = state.currentDrawing[i];
+            const dx = px - x;
+            const dy = py - y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < 20) {
-                ctx.closePath();
+              // Larger touch target
+              state.isDragging = true;
+              state.dragPointIndex = i;
+              return;
             }
+          }
 
-            ctx.stroke();
+          state.isDrawing = true;
+          addPointToDrawing(x, y);
+        });
 
-            // Draw control points if editable
-            if (isEditable) {
-                for (let i = 0; i < points.length; i++) {
-                    const [x, y] = points[i];
-                    if (x === 0 && y === 0) continue; // Skip padding zeros
+        drawingCanvas.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          if (!state.isDrawing && !state.isDragging) return;
 
-                    ctx.fillStyle = i === 0 ? '#ff0000' : '#0066cc';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 5, 0, Math.PI * 2);
-                    ctx.fill();
+          const touch = e.touches[0];
+          const rect = drawingCanvas.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
 
-                    // Draw point index
-                    ctx.fillStyle = '#000';
-                    ctx.font = '10px Arial';
-                    ctx.fillText(i.toString(), x + 7, y - 7);
-                }
-            }
-        }
+          if (state.isDragging) {
+            updatePointInDrawing(state.dragPointIndex, x, y);
+          }
+        });
 
-        function addPointToDrawing(x, y) {
-            state.currentDrawing.push([x, y]);
-            drawPoints(drawingCtx, state.currentDrawing, true);
-        }
+        drawingCanvas.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          state.isDrawing = false;
+          state.isDragging = false;
+        });
 
-        function updatePointInDrawing(index, x, y) {
-            if (index >= 0 && index < state.currentDrawing.length) {
-                state.currentDrawing[index] = [x, y];
-                drawPoints(drawingCtx, state.currentDrawing, true);
-            }
-        }
+        // Dataset management buttons
+        loadDatasetBtn.addEventListener('click', loadDataset);
+        saveDatasetBtn.addEventListener('click', saveDataset);
+        retrainModelBtn.addEventListener('click', retrainModel);
+      }
 
-        function clearDrawing() {
-            state.currentDrawing = [];
-            drawGrid(drawingCtx);
-            hideStatus(trainingStatus);
-        }
-
-        // UI Functions
-        function renderDatasetTable() {
-            if (state.dataset.length === 0) {
-                datasetBody.innerHTML = '<tr><td colspan="5">No data in dataset</td></tr>';
-                return;
-            }
-
-            datasetBody.innerHTML = '';
-
-            state.dataset.forEach((item, index) => {
-                const row = document.createElement('tr');
-
-                // ID column
-                const idCell = document.createElement('td');
-                idCell.textContent = index + 1;
-                row.appendChild(idCell);
-
-                // Prompt column
-                const promptCell = document.createElement('td');
-                promptCell.textContent = item.prompt;
-                row.appendChild(promptCell);
-
-                // Points column
-                const pointsCell = document.createElement('td');
-                pointsCell.textContent = `${item.points.length} points`;
-                row.appendChild(pointsCell);
-
-                // Preview column
-                const previewCell = document.createElement('td');
-                const previewCanvas = document.createElement('canvas');
-                previewCanvas.width = 100;
-                previewCanvas.height = 100;
-                const previewCtx = previewCanvas.getContext('2d');
-
-                // Scale the points to fit the small preview
-                const scaledPoints = item.points.map(([x, y]) => {
-                    return [x / 3, y / 3];
-                });
-
-                drawGrid(previewCtx);
-                drawPoints(previewCtx, scaledPoints);
-
-                previewCell.appendChild(previewCanvas);
-                row.appendChild(previewCell);
-
-                // Actions column
-                const actionsCell = document.createElement('td');
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.className = 'danger';
-                deleteBtn.onclick = () => {
-                    state.dataset.splice(index, 1);
-                    renderDatasetTable();
-                };
-                actionsCell.appendChild(deleteBtn);
-                row.appendChild(actionsCell);
-
-                datasetBody.appendChild(row);
-            });
-        }
-
-        function showStatus(element, message, type) {
-            element.textContent = message;
-            element.className = `status ${type}`;
-            element.classList.remove('hidden');
-        }
-
-        function hideStatus(element) {
-            element.classList.add('hidden');
-        }
-
-        function showLoader(loader) {
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader(loader) {
-            loader.classList.add('hidden');
-        }
-
-        // Event Listeners
-        function setupEventListeners() {
-            // Predict button
-            predictBtn.addEventListener('click', () => {
-                const prompt = promptSelect.value;
-                if (!prompt) {
-                    showStatus(predictionStatus, 'Please select a prompt', 'error');
-                    return;
-                }
-
-                predictShape(prompt);
-            });
-
-            // Clear drawing button
-            clearDrawingBtn.addEventListener('click', clearDrawing);
-
-            // Add to dataset button
-            addToDatasetBtn.addEventListener('click', () => {
-                const prompt = newPromptInput.value.trim();
-
-                if (!prompt) {
-                    showStatus(trainingStatus, 'Please enter a shape name', 'error');
-                    return;
-                }
-
-                if (state.currentDrawing.length < 3) {
-                    showStatus(trainingStatus, 'Draw at least 3 points to create a shape', 'error');
-                    return;
-                }
-
-                state.dataset.push({
-                    prompt,
-                    points: [...state.currentDrawing]
-                });
-
-                renderDatasetTable();
-                showStatus(trainingStatus, `Added "${prompt}" shape to the dataset`, 'success');
-
-                // If this is a new prompt, add it to the dropdown
-                if (!state.prompts.includes(prompt)) {
-                    state.prompts.push(prompt);
-                    const option = document.createElement('option');
-                    option.value = prompt;
-                    option.textContent = prompt;
-                    promptSelect.appendChild(option);
-                }
-
-                // Clear for next drawing
-                clearDrawing();
-                newPromptInput.value = '';
-            });
-
-            // Drawing canvas events
-            drawingCanvas.addEventListener('mousedown', (e) => {
-                const rect = drawingCanvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                // Check if we're clicking on an existing point
-                for (let i = 0; i < state.currentDrawing.length; i++) {
-                    const [px, py] = state.currentDrawing[i];
-                    const dx = px - x;
-                    const dy = py - y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 10) { // Within 10px of a point
-                        state.isDragging = true;
-                        state.dragPointIndex = i;
-                        return;
-                    }
-                }
-
-                // Otherwise start drawing
-                state.isDrawing = true;
-                addPointToDrawing(x, y);
-            });
-
-            drawingCanvas.addEventListener('mousemove', (e) => {
-                if (!state.isDrawing && !state.isDragging) return;
-
-                const rect = drawingCanvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                if (state.isDragging) {
-                    updatePointInDrawing(state.dragPointIndex, x, y);
-                }
-            });
-
-            drawingCanvas.addEventListener('mouseup', () => {
-                state.isDrawing = false;
-                state.isDragging = false;
-            });
-
-            drawingCanvas.addEventListener('mouseleave', () => {
-                state.isDrawing = false;
-                state.isDragging = false;
-            });
-
-            // Touch events for mobile
-            drawingCanvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const rect = drawingCanvas.getBoundingClientRect();
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-
-                // Check if we're touching an existing point
-                for (let i = 0; i < state.currentDrawing.length; i++) {
-                    const [px, py] = state.currentDrawing[i];
-                    const dx = px - x;
-                    const dy = py - y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 20) { // Larger touch target
-                        state.isDragging = true;
-                        state.dragPointIndex = i;
-                        return;
-                    }
-                }
-
-                state.isDrawing = true;
-                addPointToDrawing(x, y);
-            });
-
-            drawingCanvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!state.isDrawing && !state.isDragging) return;
-
-                const touch = e.touches[0];
-                const rect = drawingCanvas.getBoundingClientRect();
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-
-                if (state.isDragging) {
-                    updatePointInDrawing(state.dragPointIndex, x, y);
-                }
-            });
-
-            drawingCanvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                state.isDrawing = false;
-                state.isDragging = false;
-            });
-
-            // Dataset management buttons
-            loadDatasetBtn.addEventListener('click', loadDataset);
-            saveDatasetBtn.addEventListener('click', saveDataset);
-            retrainModelBtn.addEventListener('click', retrainModel);
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', init);
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', init);
     </script>
-</body>
+  </body>
 </html>
